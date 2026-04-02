@@ -21,6 +21,8 @@
             --common: #bdc3c7;
             --rare: #27ae60;
             --epic: #8e44ad;
+            /* New Shiny Color */
+            --shiny: #ffd700; 
         }
 
         body {
@@ -85,6 +87,12 @@
             box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
         }
 
+        /* Specific style for Shiny Category button when active */
+        #btn-shiny.active {
+            background: var(--shiny);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -122,6 +130,8 @@
         .rarity-COMMON { border-top-color: var(--common); }
         .rarity-RARE { border-top-color: var(--rare); }
         .rarity-EPIC { border-top-color: var(--epic); }
+        /* Shiny border color */
+        .rarity-SHINY { border-top-color: var(--shiny); border-top-width: 6px; }
 
         .item-name { font-size: 1.2em; font-weight: 800; margin-bottom: 5px; }
         .item-note { color: #888; font-size: 0.85em; margin-bottom: 15px; min-height: 20px;}
@@ -132,6 +142,11 @@
             color: var(--accent);
             font-weight: 800;
             text-align: center;
+        }
+
+        .rarity-SHINY .value-box {
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--shiny);
         }
 
         .hidden { display: none; }
@@ -151,8 +166,9 @@
 
     <div class="container">
         <div class="main-nav">
-            <button onclick="showCategory('units')" id="btn-units" class="active">Units List</button>
-            <button onclick="showCategory('items')" id="btn-items">Items List</button>
+            <button onclick="showCategory('units')" id="btn-units" class="active">Clear Units</button>
+            <button onclick="showCategory('shiny')" id="btn-shiny">Shiny Units</button>
+            <button onclick="showCategory('items')" id="btn-items">Items</button>
         </div>
 
         <div id="unit-rarities" class="rarity-nav">
@@ -164,6 +180,12 @@
             <button class="r-btn" onclick="filterRarity('HERO', this)">Hero</button>
             <button class="r-btn" onclick="filterRarity('EXCLUSIVE', this)">Exclusive</button>
             <button class="r-btn" onclick="filterRarity('EVO', this)">Evo/Crafted</button>
+        </div>
+
+        <div id="shiny-rarities" class="rarity-nav hidden">
+            <button class="r-btn" onclick="filterRarity('SECRET', this)">Secret</button>
+            <button class="r-btn" onclick="filterRarity('DIVINE', this)">Divine</button>
+            <button class="r-btn" onclick="filterRarity('HERO', this)">Hero</button>
         </div>
 
         <div id="item-rarities" class="rarity-nav hidden">
@@ -287,7 +309,19 @@
                 { name: "Savini Jason", rarity: "EVO", value: "900-1000 Gems", note: "" },
                 { name: "Garrder", rarity: "EVO", value: "30k-50k Gems", note: "" },
                 { name: "Mr Robux (Evo)", rarity: "EVO", value: "25k-35k Gems", note: "" }
-                
+            ],
+            // SHINY SECTION: You can add your shiny units here
+            shiny: [
+                { name: "Shiny Bill Cipher", rarity: "DIVINE", value: "17k+ Gems", note: "" },
+                { name: "Shiny One", rarity: "DIVINE", value: "50k+ Gems", note: "" },
+                { name: "Shiny D1M3NS10N4L", rarity: "HERO", value: "7-8k+ Gems", note: "" },
+                { name: "Shiny D00MBRINGER", rarity: "HERO", value: "8k+ Gems", note: "" },
+                { name: "Shiny Ink King Overlord", rarity: "HERO", value: "9-10k+ Gems", note: "" 
+                { name: "Shiny Catnap", rarity: "SECRET", value: "7-8k Gems", note: "" },
+                { name: "Shiny Kuzvelia", rarity: "SECRET", value: "6-7.2k Gems", note: "" },
+                { name: "Shiny Disco Freddy", rarity: "SECRET", value: "8-10k Gems", note: "" },
+                { name: "Shiny Blackhat", rarity: "SECRET", value: "15k+ Gems", note: "" },
+                { name: "Shiny Eduardo", rarity: "SECRET", value: "N/A", note: "" }
             ],
             items: [
                 { name: "Tix", rarity: "COMMON", value: "1", note: "Currency" },
@@ -324,20 +358,21 @@
                 { name: "April Fools Crate", rarity: "EXCLUSIVE", value: 100, note: "" },
                 { name: "The Alliance Crate", rarity: "EXCLUSIVE", value: 250, note: "" },
                 { name: "Toilet Crate", rarity: "EXCLUSIVE", value: 10, note: "" }
-                
             ]
         };
 
         function showCategory(cat) {
             document.getElementById('btn-units').className = (cat === 'units') ? 'active' : '';
+            document.getElementById('btn-shiny').className = (cat === 'shiny') ? 'active' : '';
             document.getElementById('btn-items').className = (cat === 'items') ? 'active' : '';
+            
             document.getElementById('unit-rarities').className = (cat === 'units') ? 'rarity-nav' : 'hidden';
+            document.getElementById('shiny-rarities').className = (cat === 'shiny') ? 'rarity-nav' : 'hidden';
             document.getElementById('item-rarities').className = (cat === 'items') ? 'rarity-nav' : 'hidden';
             
             window.currentCat = cat;
             document.getElementById('list-container').innerHTML = '<div class="empty-msg">Select a Rarity to view the values.</div>';
             
-            // Reset active rarity buttons
             document.querySelectorAll('.r-btn').forEach(b => b.classList.remove('active'));
         }
 
@@ -354,7 +389,7 @@
             }
 
             container.innerHTML = items.map(item => `
-                <div class="value-card rarity-${item.rarity}">
+                <div class="value-card ${window.currentCat === 'shiny' ? 'rarity-SHINY' : 'rarity-' + item.rarity}">
                     <div class="item-name">${item.name}</div>
                     <div class="item-note">${item.note}</div>
                     <div class="value-box">${item.value}</div>
