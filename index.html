@@ -312,16 +312,8 @@
             ],
             // SHINY SECTION: You can add your shiny units here
             shiny: [
-                { name: "Shiny Bill Cipher", rarity: "DIVINE", value: "17k+ Gems", note: "" },
-                { name: "Shiny One", rarity: "DIVINE", value: "50k+ Gems", note: "" },
-                { name: "Shiny D1M3NS10N4L", rarity: "HERO", value: "7-8k+ Gems", note: "" },
-                { name: "Shiny D00MBRINGER", rarity: "HERO", value: "8k+ Gems", note: "" },
-                { name: "Shiny Ink King Overlord", rarity: "HERO", value: "9k+ Gems", note: "" 
-                { name: "Shiny Catnap", rarity: "SECRET", value: "7-8k Gems", note: "" },
-                { name: "Shiny Kuzvelia", rarity: "SECRET", value: "6-7.2k Gems", note: "" },
-                { name: "Shiny Disco Freddy", rarity: "SECRET", value: "8-10k Gems", note: "" },
-                { name: "Shiny Blackhat", rarity: "SECRET", value: "15k+ Gems", note: "" },
-                { name: "Shiny Eduardo", rarity: "SECRET", value: "N/A", note: "" }
+                { name: "Shiny Spinning Cat", rarity: "LEGENDARY", value: "30-40 Gems", note: "Shiny" },
+                { name: "Shiny Wazzup Ghostface", rarity: "LEGENDARY", value: "15-30 Gems", note: "Shiny" }
             ],
             items: [
                 { name: "Tix", rarity: "COMMON", value: "1", note: "Currency" },
@@ -358,32 +350,23 @@
                 { name: "April Fools Crate", rarity: "EXCLUSIVE", value: 100, note: "" },
                 { name: "The Alliance Crate", rarity: "EXCLUSIVE", value: 250, note: "" },
                 { name: "Toilet Crate", rarity: "EXCLUSIVE", value: 10, note: "" }
-            ],
+            ]
         };
 
         function showCategory(cat) {
-    // 1. Update the Main Buttons (Clear Units, Shiny, Items)
-    document.getElementById('btn-units').classList.toggle('active', cat === 'units');
-    document.getElementById('btn-shiny').classList.toggle('active', cat === 'shiny');
-    document.getElementById('btn-items').classList.toggle('active', cat === 'items');
-    
-    // 2. Show the correct Rarity Menu, Hide the others
-    document.getElementById('unit-rarities').classList.add('hidden');
-    document.getElementById('shiny-rarities').classList.add('hidden');
-    document.getElementById('item-rarities').classList.add('hidden');
-
-    if (cat === 'units') document.getElementById('unit-rarities').classList.remove('hidden');
-    if (cat === 'shiny') document.getElementById('shiny-rarities').classList.remove('hidden');
-    if (cat === 'items') document.getElementById('item-rarities').classList.remove('hidden');
-    
-    // 3. Set the state and clear the list
-    window.currentCat = cat;
-    document.getElementById('list-container').innerHTML = '<div class="empty-msg">Select a Rarity to view the values.</div>';
-    
-    // 4. Reset all rarity buttons
-    document.querySelectorAll('.r-btn').forEach(b => b.classList.remove('active'));
-}
-
+            document.getElementById('btn-units').className = (cat === 'units') ? 'active' : '';
+            document.getElementById('btn-shiny').className = (cat === 'shiny') ? 'active' : '';
+            document.getElementById('btn-items').className = (cat === 'items') ? 'active' : '';
+            
+            document.getElementById('unit-rarities').className = (cat === 'units') ? 'rarity-nav' : 'hidden';
+            document.getElementById('shiny-rarities').className = (cat === 'shiny') ? 'rarity-nav' : 'hidden';
+            document.getElementById('item-rarities').className = (cat === 'items') ? 'rarity-nav' : 'hidden';
+            
+            window.currentCat = cat;
+            document.getElementById('list-container').innerHTML = '<div class="empty-msg">Select a Rarity to view the values.</div>';
+            
+            document.querySelectorAll('.r-btn').forEach(b => b.classList.remove('active'));
+        }
 
         function filterRarity(rarity, btn) {
             document.querySelectorAll('.r-btn').forEach(b => b.classList.remove('active'));
