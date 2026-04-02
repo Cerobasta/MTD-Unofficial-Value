@@ -362,19 +362,28 @@
         };
 
         function showCategory(cat) {
-            document.getElementById('btn-units').className = (cat === 'units') ? 'active' : '';
-            document.getElementById('btn-shiny').className = (cat === 'shiny') ? 'active' : '';
-            document.getElementById('btn-items').className = (cat === 'items') ? 'active' : '';
-            
-            document.getElementById('unit-rarities').className = (cat === 'units') ? 'rarity-nav' : 'hidden';
-            document.getElementById('shiny-rarities').className = (cat === 'shiny') ? 'rarity-nav' : 'hidden';
-            document.getElementById('item-rarities').className = (cat === 'items') ? 'rarity-nav' : 'hidden';
-            
-            window.currentCat = cat;
-            document.getElementById('list-container').innerHTML = '<div class="empty-msg">Select a Rarity to view the values.</div>';
-            
-            document.querySelectorAll('.r-btn').forEach(b => b.classList.remove('active'));
-        }
+    // 1. Update the Main Buttons (Clear Units, Shiny, Items)
+    document.getElementById('btn-units').classList.toggle('active', cat === 'units');
+    document.getElementById('btn-shiny').classList.toggle('active', cat === 'shiny');
+    document.getElementById('btn-items').classList.toggle('active', cat === 'items');
+    
+    // 2. Show the correct Rarity Menu, Hide the others
+    document.getElementById('unit-rarities').classList.add('hidden');
+    document.getElementById('shiny-rarities').classList.add('hidden');
+    document.getElementById('item-rarities').classList.add('hidden');
+
+    if (cat === 'units') document.getElementById('unit-rarities').classList.remove('hidden');
+    if (cat === 'shiny') document.getElementById('shiny-rarities').classList.remove('hidden');
+    if (cat === 'items') document.getElementById('item-rarities').classList.remove('hidden');
+    
+    // 3. Set the state and clear the list
+    window.currentCat = cat;
+    document.getElementById('list-container').innerHTML = '<div class="empty-msg">Select a Rarity to view the values.</div>';
+    
+    // 4. Reset all rarity buttons
+    document.querySelectorAll('.r-btn').forEach(b => b.classList.remove('active'));
+}
+
 
         function filterRarity(rarity, btn) {
             document.querySelectorAll('.r-btn').forEach(b => b.classList.remove('active'));
