@@ -22,6 +22,9 @@
             --rare: #27ae60;
             --epic: #8e44ad;
             --shiny: #ffd700; 
+            --win: #2ecc71;
+            --loss: #e74c3c;
+            --fair: #f1c40f;
         }
 
         body {
@@ -97,6 +100,108 @@
             margin: 0 auto;
         }
 
+        /* Calculator UI Styles */
+        .calc-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: var(--secondary);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #333;
+        }
+
+        .suggestions-box {
+            position: absolute;
+            background: #1a1a2e;
+            border: 1px solid var(--accent);
+            width: 100%;
+            z-index: 100;
+            max-height: 250px; /* Increased height */
+            overflow-y: auto; /* Scrollable */
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Custom Scrollbar for Suggestions */
+        .suggestions-box::-webkit-scrollbar { width: 6px; }
+        .suggestions-box::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        .sug-item {
+            padding: 12px;
+            cursor: pointer;
+            text-align: left;
+            border-bottom: 1px solid #333;
+            font-size: 0.9em;
+        }
+        .sug-item:hover { background: #252545; color: var(--accent); }
+
+        .added-items {
+            margin-top: 15px;
+            min-height: 80px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px dashed #444;
+        }
+
+        .selected-unit {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f0f1a;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            border-left: 3px solid var(--accent);
+        }
+
+        .remove-item { 
+            color: #ff4500; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin-left: 10px;
+            padding: 2px 6px;
+            background: rgba(255, 69, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .side-total { 
+            margin-top: 15px; 
+            font-weight: 800; 
+            color: var(--accent); 
+            font-size: 1.1em;
+            background: rgba(0, 212, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .calc-input-group { position: relative; }
+        .calc-input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: var(--primary);
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .result-banner {
+            grid-column: 1/-1;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            font-weight: 900;
+            margin-top: 10px;
+            border: 2px solid #333;
+        }
+
+        .res-win { color: var(--win); border-color: var(--win); background: rgba(46, 204, 113, 0.1); }
+        .res-loss { color: var(--loss); border-color: var(--loss); background: rgba(231, 76, 60, 0.1); }
+        .res-fair { color: var(--fair); border-color: var(--fair); background: rgba(241, 196, 15, 0.1); }
+
         #list-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -115,8 +220,6 @@
             text-align: left;
             transition: 0.3s;
         }
-
-        .value-card:hover { transform: scale(1.02); }
 
         .rarity-LEGENDARY { border-top-color: var(--legendary); }
         .rarity-MYTHIC { border-top-color: var(--mythic); }
@@ -142,13 +245,12 @@
             text-align: center;
         }
 
-        .rarity-SHINY .value-box {
-            background: rgba(255, 215, 0, 0.1);
-            color: var(--shiny);
-        }
-
         .hidden { display: none !important; }
         .empty-msg { grid-column: 1/-1; padding: 50px; color: #555; }
+
+        @media (max-width: 600px) {
+            .calc-container { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -166,6 +268,7 @@
             <button onclick="showCategory('units')" id="btn-units" class="active">Clear Units</button>
             <button onclick="showCategory('shiny')" id="btn-shiny">Shiny Units</button>
             <button onclick="showCategory('items')" id="btn-items">Items</button>
+            <button onclick="showCategory('calc')" id="btn-calc">Calculator</button>
         </div>
 
         <div id="unit-rarities" class="rarity-nav">
@@ -194,6 +297,33 @@
             <button class="r-btn" onclick="filterRarity('EXOTIC', this)">Exotic</button>
             <button class="r-btn" onclick="filterRarity('SECRET', this)">Secret</button>
             <button class="r-btn" onclick="filterRarity('EXCLUSIVE', this)">Exclusive</button>
+        </div>
+
+        <div id="calculator-section" class="hidden">
+            <div class="calc-container">
+                <div class="calc-side">
+                    <h3>YOUR OFFER</h3>
+                    <div class="calc-input-group">
+                        <input type="text" id="your-search" placeholder="Search unit/item..." oninput="showSuggestions(this, 'your')" autocomplete="off">
+                        <div id="your-suggestions" class="suggestions-box"></div>
+                    </div>
+                    <div id="your-list" class="added-items"></div>
+                    <div class="side-total">Total: <span id="your-total-display">0</span> Gems</div>
+                </div>
+
+                <div class="calc-side">
+                    <h3>THEIR OFFER</h3>
+                    <div class="calc-input-group">
+                        <input type="text" id="their-search" placeholder="Search unit/item..." oninput="showSuggestions(this, 'their')" autocomplete="off">
+                        <div id="their-suggestions" class="suggestions-box"></div>
+                    </div>
+                    <div id="their-list" class="added-items"></div>
+                    <div class="side-total">Total: <span id="their-total-display">0</span> Gems</div>
+                </div>
+
+                <div id="trade-result" class="result-banner">Add items to see result</div>
+                <button onclick="clearCalc()" style="grid-column: 1/-1; margin-top:10px; background:#444; width: 100%;">Clear Calculator</button>
+            </div>
         </div>
 
         <div id="list-container"></div>
@@ -264,7 +394,6 @@
                 { name: "Builder", rarity: "EXCLUSIVE", value: "3500+ Gems", note: "" },
                 { name: "Boxy Boo", rarity: "EXCLUSIVE", value: "5-6k Gems", note: "" },
                 { name: "Skeleton King", rarity: "EXCLUSIVE", value: "1.5-2k Gems", note: "" },
-                { name: "Huggy Wuggy", rarity: "EXCLUSIVE", value: "20k-25k Gems", note: "" },
                 { name: "Peppino", rarity: "EXCLUSIVE", value: "1.5-2k Gems", note: "" },
                 { name: "Mutated One", rarity: "EXCLUSIVE", value: "200-300 Gems", note: "Gems" },
                 { name: "Huggy Wuggy", rarity: "EXCLUSIVE", value: "15k-25k Gems", note: "" },
@@ -359,22 +488,29 @@
         };
 
         function showCategory(cat) {
-            document.getElementById('btn-units').className = (cat === 'units') ? 'active' : '';
-            document.getElementById('btn-shiny').className = (cat === 'shiny') ? 'active' : '';
-            document.getElementById('btn-items').className = (cat === 'items') ? 'active' : '';
+            const buttons = ['units', 'shiny', 'items', 'calc'];
+            buttons.forEach(b => {
+                document.getElementById('btn-' + b).className = (cat === b) ? 'active' : '';
+            });
             
             document.getElementById('unit-rarities').classList.add('hidden');
             document.getElementById('shiny-rarities').classList.add('hidden');
             document.getElementById('item-rarities').classList.add('hidden');
+            document.getElementById('calculator-section').classList.add('hidden');
+            document.getElementById('list-container').classList.remove('hidden');
 
             if (cat === 'units') document.getElementById('unit-rarities').classList.remove('hidden');
             if (cat === 'shiny') document.getElementById('shiny-rarities').classList.remove('hidden');
             if (cat === 'items') document.getElementById('item-rarities').classList.remove('hidden');
             
-            window.currentCat = cat;
-            document.getElementById('list-container').innerHTML = '<div class="empty-msg">Select a Rarity to view the values.</div>';
-            
-            document.querySelectorAll('.r-btn').forEach(b => b.classList.remove('active'));
+            if (cat === 'calc') {
+                document.getElementById('calculator-section').classList.remove('hidden');
+                document.getElementById('list-container').classList.add('hidden');
+            } else {
+                window.currentCat = cat;
+                document.getElementById('list-container').innerHTML = '<div class="empty-msg">Select a Rarity to view the values.</div>';
+                document.querySelectorAll('.r-btn').forEach(b => b.classList.remove('active'));
+            }
         }
 
         function filterRarity(rarity, btn) {
@@ -396,6 +532,99 @@
                     <div class="value-box">${item.value}</div>
                 </div>
             `).join('');
+        }
+
+        let yourOfferList = [];
+        let theirOfferList = [];
+
+        function parseValue(valStr) {
+            if (!valStr || valStr === "N/A" || valStr === "O/C" || valStr === "TBA") return 0;
+            let clean = valStr.toLowerCase().replace(/gems/g, '').replace(/\+/g, '').trim();
+            if (clean.includes('-')) {
+                let parts = clean.split('-');
+                return (parseValue(parts[0]) + parseValue(parts[1])) / 2;
+            }
+            let num = parseFloat(clean);
+            if (clean.includes('k')) num *= 1000;
+            return isNaN(num) ? 0 : num;
+        }
+
+        function showSuggestions(input, side) {
+            const query = input.value.toLowerCase();
+            const box = document.getElementById(side + '-suggestions');
+            if (query.length < 1) { box.innerHTML = ''; return; }
+
+            const allItems = [...data.units, ...data.shiny, ...data.items];
+            const matches = allItems.filter(i => i.name.toLowerCase().includes(query)).slice(0, 15);
+
+            box.innerHTML = matches.map(item => `
+                <div class="sug-item" onclick="addItem('${side}', '${item.name.replace(/'/g, "\\'")}', '${item.value}')">
+                    <b>${item.name}</b> <br> <small style="color:#888">${item.rarity} - ${item.value}</small>
+                </div>
+            `).join('');
+        }
+
+        function addItem(side, name, value) {
+            const item = { name, value, numeric: parseValue(value) };
+            if (side === 'your') yourOfferList.push(item);
+            else theirOfferList.push(item);
+            
+            document.getElementById(side + '-search').value = '';
+            document.getElementById(side + '-suggestions').innerHTML = '';
+            renderCalc();
+        }
+
+        function removeItem(side, index) {
+            if (side === 'your') yourOfferList.splice(index, 1);
+            else theirOfferList.splice(index, 1);
+            renderCalc();
+        }
+
+        function renderCalc() {
+            const renderSide = (side, list) => {
+                const container = document.getElementById(side + '-list');
+                container.innerHTML = list.length === 0 ? '<div style="color:#555; font-size:0.8em;">No items added</div>' : list.map((item, index) => `
+                    <div class="selected-unit">
+                        <span>${item.name}</span>
+                        <span><small>${item.value}</small> <span class="remove-item" onclick="removeItem('${side}', ${index})">✕</span></span>
+                    </div>
+                `).join('');
+                
+                const total = list.reduce((sum, item) => sum + item.numeric, 0);
+                document.getElementById(side + '-total-display').innerText = total.toLocaleString();
+                return total;
+            };
+
+            const yourTotal = renderSide('your', yourOfferList);
+            const theirTotal = renderSide('their', theirOfferList);
+            
+            const resBox = document.getElementById('trade-result');
+            const diff = theirTotal - yourTotal;
+
+            if (yourTotal === 0 && theirTotal === 0) {
+                resBox.innerText = "Add items to see result";
+                resBox.className = "result-banner";
+                resBox.style.borderColor = "#333";
+            } else if (diff > 0) {
+                resBox.innerText = `YOU WIN! (+${diff.toLocaleString()} Gems)`;
+                resBox.className = "result-banner res-win";
+            } else if (diff < 0) {
+                resBox.innerText = `YOU LOSE! (-${Math.abs(diff).toLocaleString()} Gems)`;
+                resBox.className = "result-banner res-loss";
+            } else {
+                resBox.innerText = "FAIR TRADE (Equal Value)";
+                resBox.className = "result-banner res-fair";
+            }
+        }
+
+        function clearCalc() {
+            yourOfferList = [];
+            theirOfferList = [];
+            document.getElementById('your-search').value = '';
+            document.getElementById('their-search').value = '';
+            document.getElementById('your-suggestions').innerHTML = '';
+            document.getElementById('their-suggestions').innerHTML = '';
+            renderCalc();
         }
 
         // Default Load
