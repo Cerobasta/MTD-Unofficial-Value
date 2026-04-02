@@ -21,7 +21,6 @@
             --common: #bdc3c7;
             --rare: #27ae60;
             --epic: #8e44ad;
-            /* New Shiny Color */
             --shiny: #ffd700; 
         }
 
@@ -87,9 +86,9 @@
             box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
         }
 
-        /* Specific style for Shiny Category button when active */
         #btn-shiny.active {
             background: var(--shiny);
+            color: var(--primary);
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
 
@@ -130,7 +129,6 @@
         .rarity-COMMON { border-top-color: var(--common); }
         .rarity-RARE { border-top-color: var(--rare); }
         .rarity-EPIC { border-top-color: var(--epic); }
-        /* Shiny border color */
         .rarity-SHINY { border-top-color: var(--shiny); border-top-width: 6px; }
 
         .item-name { font-size: 1.2em; font-weight: 800; margin-bottom: 5px; }
@@ -149,8 +147,7 @@
             color: var(--shiny);
         }
 
-        .hidden { display: none; }
-        
+        .hidden { display: none !important; }
         .empty-msg { grid-column: 1/-1; padding: 50px; color: #555; }
     </style>
 </head>
@@ -183,9 +180,10 @@
         </div>
 
         <div id="shiny-rarities" class="rarity-nav hidden">
+            <button class="r-btn" onclick="filterRarity('EXOTIC', this)">Exotic</button>
             <button class="r-btn" onclick="filterRarity('SECRET', this)">Secret</button>
-            <button class="r-btn" onclick="filterRarity('DIVINE', this)">Divine</button>
             <button class="r-btn" onclick="filterRarity('HERO', this)">Hero</button>
+            <button class="r-btn" onclick="filterRarity('DIVINE', this)">Divine</button>
         </div>
 
         <div id="item-rarities" class="rarity-nav hidden">
@@ -310,13 +308,12 @@
                 { name: "Garrder", rarity: "EVO", value: "30k-50k Gems", note: "" },
                 { name: "Mr Robux (Evo)", rarity: "EVO", value: "25k-35k Gems", note: "" }
             ],
-            // SHINY SECTION: You can add your shiny units here
             shiny: [
                 { name: "Shiny Bill Cipher", rarity: "DIVINE", value: "17k+ Gems", note: "" },
                 { name: "Shiny One", rarity: "DIVINE", value: "50k+ Gems", note: "" },
                 { name: "Shiny D1M3NS10N4L", rarity: "HERO", value: "7-8k+ Gems", note: "" },
                 { name: "Shiny D00MBRINGER", rarity: "HERO", value: "8k+ Gems", note: "" },
-                { name: "Shiny Ink King Overlord", rarity: "HERO", value: "9k+ Gems", note: "" }
+                { name: "Shiny Ink King Overlord", rarity: "HERO", value: "9-10k+ Gems", note: "" },
                 { name: "Shiny Catnap", rarity: "SECRET", value: "7-8k Gems", note: "" },
                 { name: "Shiny Kuzvelia", rarity: "SECRET", value: "6-7.2k Gems", note: "" },
                 { name: "Shiny Disco Freddy", rarity: "SECRET", value: "8-10k Gems", note: "" },
@@ -336,28 +333,28 @@
                 { name: "67 Rune", rarity: "MYTHIC", value: "8000", note: "Rune" },
                 { name: "Bow Tie", rarity: "EXOTIC", value: "50", note: "Accessory" },
                 { name: "Prototype Crate", rarity: "SECRET", value: "70K+", note: "Accessory" },
-                { name: "Huggy Wuggy Crate", rarity: "EXCLUSIVE", value: 400, note: "" },
-                { name: "Classic Crate", rarity: "EXCLUSIVE", value: 150, note: "" },
-                { name: "Present", rarity: "EXCLUSIVE", value: 20, note: "" },
-                { name: "Christmas Crate", rarity: "EXCLUSIVE", value: 200, note: "" },
-                { name: "Deltarune Crate", rarity: "EXCLUSIVE", value: 150, note: "" },
-                { name: "Playtime Crate", rarity: "EXCLUSIVE", value: 100, note: "" },
-                { name: "Slap Crate", rarity: "EXCLUSIVE", value: 100, note: "" },
-                { name: "Ultrakill Crate", rarity: "EXCLUSIVE", value: 10, note: "" },
-                { name: "Evolution Crate", rarity: "EXCLUSIVE", value: 25, note: "" },
-                { name: "Raid Crate 1", rarity: "EXCLUSIVE", value: 200, note: "" },
-                { name: "Raid Crate 2", rarity: "EXCLUSIVE", value: 100, note: "" },
-                { name: "Exclusive Crate 1", rarity: "EXCLUSIVE", value: 300, note: "" },
-                { name: "Exclusive Crate 2", rarity: "EXCLUSIVE", value: 180, note: "" },
-                { name: "Wubbox Crate", rarity: "EXCLUSIVE", value: 50, note: "" },
-                { name: "Super Crate", rarity: "EXCLUSIVE", value: 10, note: "" },
-                { name: "Admin Abuse Crate 1", rarity: "EXCLUSIVE", value: 600, note: "" },
-                { name: "Admin Abuse Crate 2", rarity: "EXCLUSIVE", value: 300, note: "" },
-                { name: "Admin Abuse Crate 3", rarity: "EXCLUSIVE", value: 250, note: "" },
-                { name: "Admin Abuse Crate 4", rarity: "EXCLUSIVE", value: 200, note: "" },
-                { name: "April Fools Crate", rarity: "EXCLUSIVE", value: 100, note: "" },
-                { name: "The Alliance Crate", rarity: "EXCLUSIVE", value: 250, note: "" },
-                { name: "Toilet Crate", rarity: "EXCLUSIVE", value: 10, note: "" }
+                { name: "Huggy Wuggy Crate", rarity: "EXCLUSIVE", value: "400", note: "" },
+                { name: "Classic Crate", rarity: "EXCLUSIVE", value: "150", note: "" },
+                { name: "Present", rarity: "EXCLUSIVE", value: "20", note: "" },
+                { name: "Christmas Crate", rarity: "EXCLUSIVE", value: "200", note: "" },
+                { name: "Deltarune Crate", rarity: "EXCLUSIVE", value: "150", note: "" },
+                { name: "Playtime Crate", rarity: "EXCLUSIVE", value: "100", note: "" },
+                { name: "Slap Crate", rarity: "EXCLUSIVE", value: "100", note: "" },
+                { name: "Ultrakill Crate", rarity: "EXCLUSIVE", value: "10", note: "" },
+                { name: "Evolution Crate", rarity: "EXCLUSIVE", value: "25", note: "" },
+                { name: "Raid Crate 1", rarity: "EXCLUSIVE", value: "200", note: "" },
+                { name: "Raid Crate 2", rarity: "EXCLUSIVE", value: "100", note: "" },
+                { name: "Exclusive Crate 1", rarity: "EXCLUSIVE", value: "300", note: "" },
+                { name: "Exclusive Crate 2", rarity: "EXCLUSIVE", value: "180", note: "" },
+                { name: "Wubbox Crate", rarity: "EXCLUSIVE", value: "50", note: "" },
+                { name: "Super Crate", rarity: "EXCLUSIVE", value: "10", note: "" },
+                { name: "Admin Abuse Crate 1", rarity: "EXCLUSIVE", value: "600", note: "" },
+                { name: "Admin Abuse Crate 2", rarity: "EXCLUSIVE", value: "300", note: "" },
+                { name: "Admin Abuse Crate 3", rarity: "EXCLUSIVE", value: "250", note: "" },
+                { name: "Admin Abuse Crate 4", rarity: "EXCLUSIVE", value: "200", note: "" },
+                { name: "April Fools Crate", rarity: "EXCLUSIVE", value: "100", note: "" },
+                { name: "The Alliance Crate", rarity: "EXCLUSIVE", value: "250", note: "" },
+                { name: "Toilet Crate", rarity: "EXCLUSIVE", value: "10", note: "" }
             ]
         };
 
@@ -366,9 +363,13 @@
             document.getElementById('btn-shiny').className = (cat === 'shiny') ? 'active' : '';
             document.getElementById('btn-items').className = (cat === 'items') ? 'active' : '';
             
-            document.getElementById('unit-rarities').className = (cat === 'units') ? 'rarity-nav' : 'hidden';
-            document.getElementById('shiny-rarities').className = (cat === 'shiny') ? 'rarity-nav' : 'hidden';
-            document.getElementById('item-rarities').className = (cat === 'items') ? 'rarity-nav' : 'hidden';
+            document.getElementById('unit-rarities').classList.add('hidden');
+            document.getElementById('shiny-rarities').classList.add('hidden');
+            document.getElementById('item-rarities').classList.add('hidden');
+
+            if (cat === 'units') document.getElementById('unit-rarities').classList.remove('hidden');
+            if (cat === 'shiny') document.getElementById('shiny-rarities').classList.remove('hidden');
+            if (cat === 'items') document.getElementById('item-rarities').classList.remove('hidden');
             
             window.currentCat = cat;
             document.getElementById('list-container').innerHTML = '<div class="empty-msg">Select a Rarity to view the values.</div>';
